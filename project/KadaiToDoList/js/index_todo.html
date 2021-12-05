@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>To Do List</title>
+  <script src="js/jquery-2.1.3.min.js"></script>
+  <link rel="stylesheet" href="sample_2.css">
+</head>
+<body>
+  
+  <div class="container">
+    <div class="todoBox">
+      <div class="todoBox_header">
+        <h1>TO DO リスト</h1>
+      </div>
+      <div class="todoBox_main">
+
+        <div class="todoBox_list">
+         <ul id="todo-list">
+         </ul>
+        </div>
+      </div>
+      
+      <div class="todoBox_form">
+        <div class="inputForm">
+            <input type="text" name="text-input" id="text-input" placeholder="タスクを入力してください">
+        </div>
+        <button id="add" onclick="newElement()">登録</button>
+        <button id="edit" class="hide" onclick="editElement()">編集</button>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>
+
+<script>
+'use strict';
+
+const textInput = document.getElementById('text-input');
+const todoList = document.getElementById('todo-list');
+const editBtn = document.getElementById("edit");
+const addBtn = document.getElementById("add");
+
+//編集を解除
+document.addEventListener('click', (e) => {
+  if (e.target.className == 'active-item' || e.target.tagName == 'INPUT') {
+  } else {
+      editBtn.classList.add('hide');
+      addBtn.classList.remove('hide');
+  }
+});
+
+
+// リスト追加
+function newElement() {
+  const text = textInput.value.trim();
+  const errorMessage = document.getElementById("getError");
+  const deleteMessage = document.getElementById("doneDelete");
+  if (text === '') {
+    errorMessage.classList.remove('hide');
+    hideMessage(errorMessage);
+          return;
+      }
+
+  const li = document.createElement('li');
+  const span = document.createElement('span');
+  const button = document.createElement('button');
+  const addMessage = document.getElementById("doneTask");
+
+  li.classList.add('todo-list-item');
+  span.textContent = text;
+  button.textContent = '削除';
+  button.classList.add('todoDelete');
+  button.classList.add('hide');
+  // 削除イベントを追加
+  button.addEventListener('click', e => {
+          todoList.removeChild(e.target.closest('li'));
+          textInput.value = '';
+          deleteMessage.classList.remove('hide');
+          hideMessage(deleteMessage);
+      });
+
+  li.appendChild(span);
+  li.appendChild(button);
+  todoList.appendChild(li);
+  textInput.value = '';
+  addMessage.classList.remove('hide');
+  hideMessage(addMessage);
+}
+
+
+// 編集ボタン
+function editElement() {
+  try{
+  const text = textInput.value.trim();
+  const activeItem = document.getElementsByClassName('active-item');
+  const editMessage = document.getElementById("doneEdit");
+  const errorMessage = document.getElementById("getError");
+  activeItem[0].textContent = text;
+  editMessage.classList.remove('hide');
+  hideMessage(editMessage);
+  } catch (e) {
+    errorMessage.classList.remove('hide');
+    hideMessage(errorMessage);
+    console.error("エラー：", e.message);
+  }
+}
+
+
+// 削除ボタン
+const todoDelete = document.getElementsByClassName("todoDelete");
+const deleteMessage = document.getElementById("doneDelete");
+for (let i = 0; i < todoDelete.length; i++) {
+  todoDelete[i].onclick = function() {
+    todoList.removeChild(this.parentElement);
+    textInput.value = '';
+    deleteMessage.classList.remove('hide');
+    hideMessage(deleteMessage);
+  }
+}
+
+// リストをクリックした時
+var list = document.querySelector('ul');
+list.addEventListener('click', function(ev) {
+  const allList = document.getElementsByClassName('todo-list-item');
+  for (let i = 0; i < allList.length; i++) {
+    const listItem = allList[i];
+    if (listItem) {
+      listItem.firstElementChild.classList.remove('active-item');
+      listItem.lastElementChild.classList.add('hide');
+    }
+  }
+  if (ev.target.tagName === 'SPAN') {
+    ev.target.classList.toggle('active-item');
+  }
+  // 削除ボタン表示
+  ev.target.nextElementSibling.classList.remove('hide');
+  editBtn.classList.remove('hide');
+  addBtn.classList.add('hide');
+  textInput.value = event.target.innerHTML;
+}, false);
+
+// メッセージを消す
+function hideMessage(Element) {
+  setTimeout(() => {
+      Element.classList.add('hide');
+    }, 2500);
+}
+</script>
